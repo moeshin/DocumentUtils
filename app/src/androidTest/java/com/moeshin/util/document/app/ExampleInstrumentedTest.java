@@ -1,4 +1,4 @@
-package com.moeshin.utils.document.app;
+package com.moeshin.util.document.app;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.moeshin.documentutils", appContext.getPackageName());
+        assertEquals("com.moeshin.util.document.app", appContext.getPackageName());
     }
 }

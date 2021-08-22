@@ -1,4 +1,4 @@
-package com.moeshin.utils.document.app;
+package com.moeshin.util.document.app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
