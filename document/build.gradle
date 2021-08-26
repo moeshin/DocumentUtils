@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
@@ -9,7 +10,7 @@ android {
         minSdk 19
         targetSdk 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -31,8 +32,23 @@ dependencies {
 
 //    implementation 'androidx.appcompat:appcompat:1.3.1'
 //    implementation 'com.google.android.material:material:1.4.0'
-//    //noinspection GradleDynamicVersion
-//    testImplementation 'junit:junit:4.+'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    //noinspection GradleDynamicVersion
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.moeshin.util'
+                artifactId = 'document'
+                version = android.defaultConfig.versionName
+            }
+        }
+    }
 }
