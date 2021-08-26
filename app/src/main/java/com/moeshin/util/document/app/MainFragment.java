@@ -15,10 +15,16 @@ public class MainFragment extends PreferenceFragmentCompat {
         PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(activity);
         setPreferenceScreen(preferenceScreen);
 
+        DirUtil dir = new DirUtil(activity.getExternalFilesDir(null));
+        dir.createFile("test");
+        dir.createFile("test.txt");
+        dir.createFile("test.md");
+        dir.createFile("test.json");
+
         preferenceScreen.addPreference(new MainPreferenceCategory(
                 activity,
                 "Context#getExternalFilesDir(null)",
-                activity.getExternalFilesDir(null)
+                dir.getDir()
         ));
         preferenceScreen.addPreference(new MainPreferenceCategory(
                 activity,
