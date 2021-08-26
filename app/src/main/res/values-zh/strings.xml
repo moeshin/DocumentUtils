@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DocumentUtils</string>
+    <string name="open_documents_ui">打开 DocumentsUI</string>
+    <string name="no_set_initial_dir">没有设置初始目录</string>
+</resources>

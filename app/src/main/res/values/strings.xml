@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DocumentUtils</string>
+    <string name="open_documents_ui">Open DocumentsUI</string>
+    <string name="no_set_initial_dir">No set initial dir</string>
 </resources>
