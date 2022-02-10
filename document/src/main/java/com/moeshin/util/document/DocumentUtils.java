@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,7 @@ public class DocumentUtils {
     private static final String AUTHORITY_DOCUMENTS_UI = "com.android.externalstorage.documents";
     private static final String SCHEME_CONTENT = "content";
     private static final String PATH_DOCUMENT = "document";
+    private static final String PATH_ROOT = "root";
     private static final String ROOT_ID_PRIMARY_EMULATED = "primary";
 
     private static boolean isChildPath(String path, String parent) {
@@ -80,7 +84,8 @@ public class DocumentUtils {
     /**
      * View files in DocumentsUi app
      */
-    public static Intent createOpenDocumentsUiIntent(Context context, Uri initialUri) {
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Intent createOpenDocumentsUiIntent(Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         String pkg = PACKAGE_DOCUMENTS_UI;
         try {
@@ -90,21 +95,44 @@ public class DocumentUtils {
         }
         intent.setComponent(new ComponentName(pkg, ACTIVITY_DOCUMENTS_UI));
         intent.setPackage(pkg);
-        if (initialUri != null) {
-            intent.setData(initialUri);
-        }
         return intent;
     }
 
-    public static Intent createOpenDocumentsUiIntent(Context context) {
-        return createOpenDocumentsUiIntent(context, createExternalStorageUri());
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Intent createOpenDocumentsUiIntent(Context context, Uri initialUri) {
+        return createOpenDocumentsUiIntent(context)
+                .setData(initialUri);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static Intent createOpenDocumentsUiIntent(Context context, String relativePath) {
+        return createOpenDocumentsUiIntent(context, createDocumentUri(relativePath));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public static Intent createOpenDocumentsUiIntent(Context context, File file) {
+        return createOpenDocumentsUiIntent(context, createDocumentUri(file));
+    }
+
+    /**
+     * <p>Usually used to call {@link #createOpenDocumentsUiIntent(Context, Uri)}.
+     * <p>Can be replaced with {@link #createDocumentUri(String)}, but only support API 29 and above.
+     */
+    @SuppressWarnings("CommentedOutCode")
     public static Uri createExternalStorageUri() {
 //        StorageManager storageManager = context.getSystemService(StorageManager.class);
 //        return storageManager.getPrimaryStorageVolume().createOpenDocumentTreeIntent()
 //                .getParcelableExtra(DocumentsContract.EXTRA_INITIAL_URI));
+
 //        return DocumentsContract.buildRootUri(AUTHORITY_DOCUMENTS_UI, ROOT_ID_PRIMARY_EMULATED);
-        return createDocumentUri("");
+
+//        return createDocumentUri("");
+
+        return new Uri.Builder()
+                .scheme(SCHEME_CONTENT)
+                .authority(AUTHORITY_DOCUMENTS_UI)
+                .appendPath(PATH_ROOT)
+                .appendPath(ROOT_ID_PRIMARY_EMULATED)
+                .build();
     }
 }

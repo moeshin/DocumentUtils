@@ -63,37 +63,47 @@ public class MainPreferenceCategory extends PreferenceCategory {
     @Override
     protected void onAttachedToHierarchy(PreferenceManager preferenceManager) {
         super.onAttachedToHierarchy(preferenceManager);
-        addPreference(createItem(R.string.open_documents_ui, pref -> {
-            activity.startActivity(DocumentUtils.createOpenDocumentsUiIntent(activity, uri));
-            return false;
-        }));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            addPreference(createItem("ACTION_OPEN_DOCUMENT", pref -> {
-                activity.startActivityForResult(
-                        new Intent(Intent.ACTION_OPEN_DOCUMENT)
-
-                                // Must call setType, can be other types
-                                .setType("*/*")
-
-                                // If there are multiple types, please use Intent.EXTRA_MIME_TYPES
-                                // But don’t forget to call setType
-//                                .putExtra(Intent.EXTRA_MIME_TYPES,
-//                                        new String[] {"text/plain", "text/markdown"})
-
-                                .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                                .putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
-                        , REQUEST_CODE
-                );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || uri == null)) {
+            addPreference(createItem(R.string.open_documents_ui, pref -> {
+                Intent intent = DocumentUtils.createOpenDocumentsUiIntent(activity);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && uri != null) {
+                    intent.setData(uri);
+                }
+                activity.startActivity(intent);
                 return false;
             }));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || uri == null) {
+            addPreference(createItem("ACTION_OPEN_DOCUMENT", pref -> {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        // Must call setType, can be other types
+                        .setType("*/*")
+
+                        // If there are multiple types, please use Intent.EXTRA_MIME_TYPES
+                        // But don’t forget to call setType
+//                        .putExtra(Intent.EXTRA_MIME_TYPES,
+//                                new String[] {"text/plain", "text/markdown"})
+
+                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+                }
+                activity.startActivityForResult(intent, REQUEST_CODE);
+                return true;
+            }));
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O || uri == null)) {
             addPreference(createItem("ACTION_OPEN_DOCUMENT_TREE", pref -> {
-                activity.startActivityForResult(
-                        new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                                .putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri)
-                        , REQUEST_CODE
-                );
-                return false;
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+                }
+                activity.startActivityForResult(intent, REQUEST_CODE);
+                return true;
             }));
         }
     }
